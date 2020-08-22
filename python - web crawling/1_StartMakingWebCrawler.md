@@ -1,0 +1,103 @@
+# 웹 크롤러 만들기
+
+  우리는 항상 매번 반복적인 업무들을 하며 무의미한 시간을 보내는 경우가 생각보다 많습니다. 특히 어떤 트랜드를 조사하거나 동향을 살펴보기 위한 데이터를 수집 하는 경우, 각각의 자료들을 우리가 한땀 한땀 엑셀에 정리해 나가면서 자료를 수집하고, 그에 대한 동향을 살펴보고, 결론을 내기까지에 있어서 "내가 왜 이걸 하고 있지"라며 회의적인 생각이 드는 순간이 바로 자료를 수집하는 과정이 아닐까 생각이 됩니다.
+  
+  요즘 유튜브나 MOOC같은 온라인 학습 과정 중에 직장인을 대상으로 하는 핫한 교육들이 바로 "업무 자동화"인데요, 이는 앞서 말했던 반복적이고 노동집약적인 자료 수집 부분이 가장 큰 역할을 하고 있다고 생각합니다. 또한 이러한 업무적인 관점이 아니라 저 개인적으로는 다양한 상황에 대한 기계학습을 시도해보고 싶은 욕망이 있었는데, 이를 시작하기 위해선 개인적으로 수집한 자료들이 있어야 하고 이를 가능하게 하는 것이 바로 이 웹 크롤러를 제작하는 것이라고 생각했습니다.
+  
+  우선 이런 파이썬을 이용한 웹 크롤러 제작에 필요한 것은 두가지 정도가 필요합니다. 특정 url로 요청을 보내 웹 페이지를 요청받을 수 있게 해주는 `requests`와 받아온 웹 페이지의 정보를 우리가 해석하여 활용할 수 있도록 해주는 `BeautyfulSoup`입니다.
+  
+
+
+```python
+%pip install requests # install requests!
+%pip install bs4  # install BeautyfulSoup
+```
+
+    Note: you may need to restart the kernel to use updated packages.
+    
+
+    ERROR: Invalid requirement: '#'
+    
+
+    Note: you may need to restart the kernel to use updated packages.
+    
+
+    ERROR: Invalid requirement: '#'
+    
+
+    위의 코드에서 bs4라는 패키지를 설치하는데, 해당 패키지 내부에 BeautyfulSoup가 포함되어 있습니다!
+    
+    그러면 이제 위의 패키지를 이용해서 특정 키워드에 대한 최신 뉴스들을 받아오는 단순한 크롤러(?)를 만들어 볼껀데요, 우선 네이버 검색에서 요즘 유행(?)하고 있는 "코로나"를 키워드로 검색해 봅시다! 그리고 나서 우리는 '최신' '뉴스'에 대한 크롤러를 만들것 이기 때문에 검색창 아래 "뉴스"탭을 클릭하시고, "최신순"을 클릭해줍니다..
+    
+![title](src/search.png)
+    
+    그러면 해당 웹 페이지에서 위의 주소창에 있는 주소가 바로 우리에게 필요한 "url"주소 입니다! 이것을 가지고 아래의 코드를 실행하면 다음과 같은 결과를 얻을 수 있습니다.
+
+
+```python
+# 특정 url의 웹페이지의 페이지 정보 불러오기
+# requests 모듈을 불러온다
+import requests
+
+#내가 찾고자 하는 url을 정의
+url = "https://search.naver.com/search.naver?where=news&query=%EC%BD%94%EB%A1%9C%EB%82%98&sm=tab_srt&sort=1&photo=0&field=0&reporter_article=&pd=0&ds=&de=&docid=&nso=so%3Add%2Cp%3Aall%2Ca%3Aall&mynews=0&refresh_start=0&related=0"
+
+# url에 페이지 정보를 요청하여 획득
+res = requests.get(url)
+
+# 획득한 정보 출력
+print("Number of characters : {}".format(len(res.text)))
+print()
+print(res.text[:3000])
+```
+
+    Number of characters : 560440
+    
+    <!doctype html> <html lang="ko"> <head> <meta charset="utf-8"> <meta name="referrer" content="always">  <meta name="format-detection" content="telephone=no,address=no,email=no"> <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=2.0"> <meta property="og:title" content="코로나 : 네이버 뉴스검색"/> <meta property="og:image" content="https://ssl.pstatic.net/sstatic/search/common/og_v3.png"> <meta property="og:description" content="'코로나'의 네이버 뉴스검색 결과입니다."> <meta name="description" lang="ko" content="'코로나'의 네이버 뉴스검색 결과입니다."> <title>코로나 : 네이버 뉴스검색</title> <link rel="shortcut icon" href="https://ssl.pstatic.net/sstatic/search/favicon/favicon_191118_pc.ico">  <link rel="search" type="application/opensearchdescription+xml" href="https://ssl.pstatic.net/sstatic/search/opensearch-description.https.xml" title="Naver" /><link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/sstatic/search/pc/css/search1_200716.css"> <link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/sstatic/search/pc/css/search2_200611.css"> <link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/sstatic/search/pc/css/api_atcmp_200709.css"><script type="text/javascript"> if (!String.prototype.trim) { String.prototype.trim = function () { return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, ''); }; } if (!Array.prototype.indexOf) { Array.prototype.indexOf = function(searchElement, fromIndex) { var k; if (this == null) { throw new TypeError('"this" is null or not defined'); } var o = Object(this); var len = o.length >>> 0; if (len === 0) { return -1; } var n = fromIndex | 0; if (n >= len) { return -1; } k = Math.max(n >= 0 ? n : len - Math.abs(n), 0); while (k < len) { if (k in o && o[k] === searchElement) { return k; } k++; } return -1; }; } if (typeof(encodeURIComponent) != "function") { encodeURIComponent = function (s) { function toHex (n) { var hexchars = "0123456789ABCDEF" ; return "%%" + hexchars.charAt(n>>4) + hexchars.charAt(n&0xF) ; } var es = "" ; for (var i = 0; i < s.length;) { var c = s.charCodeAt(i++) ; if ((c&0xF800) == 0xD800) { var sc = s.charCodeAt(i++) ; c = ((c-0xD800)<<10) + (sc-0xDC00) + 0x10000 ; } if (!(c&~0x7F)) { if ((c>=65&&c<=90) || (c>=97&&c<=122) || (c>=48&&c<=57) || (c>=45&&c<=46) || c==95 || c==33 || c==126 || (c>=39&&c<=42)) es += String.fromCharCode(c) ; else es += toHex(c) ; } else if (!(c&~0x7FF)) es += toHex(0xC0+(c>>6)) + toHex(c&0x3F) ; else if (!(c&~0xFFFF)) es += toHex(0xE0+(c>>12)) + toHex(0x80+(c>>6&0x3F)) + toHex(0x80+(c&0x3F)) ; else es += toHex(0xF0+(c>>18)) + toHex(0x80+(c>>12&0x3F)) + toHex(0x80+(c>>6&0x3F)) + toHex(0x80+(c&0x3F)) ; } return es ; } } naver = window.naver || {}; naver.search = naver.search || {}; var g_D = 0 ; naver.search.error = (function () { var errorList = Array() ; return { add : function (s) { errorList.push(s) ; }, clear : function () { delete errorList ; }, get : function (s) { return errorList ; }, getString : function (d) { if (typeof d === 'undefine
+    
+
+    `res`라는 변수에 들어가 있는 엄청난 양의 문자들이 나타내는 것은 바로 웹 페이지를 구성하고 있는 HTML 형식의 정보들입니다. 56만개의 문자열을 모두 표현하면 쓸데없이 글이 너무 길어지기 때문에 `print(res.text[:3000])`이런 식으로 3000자만 출력해 보았습니다. 한줄로 나열된 HTML코드들은 불규칙한 문자 덩어리처럼 느껴져 저 안에서 어떠한 정보를 추출해 낸다는 것은 매우 어려운 일이 될 것입니다. 따라서 이를 해결하기 위한 방법 중 하나로, `BeautyfulSoup`라는 패키지를 활용 하고자 합니다.
+    우선 구체적으로 HTML에 대해서 어느정도 알아두면 좋겠지만, 저도 자세히 알고 있지는 않기 때문에 필요한 부분만 짚고 넘어가도록 하겠습니다. 기본적으로 HTML이라는 것은 웹 페이지에 보여지는 화면에 대한 일종의 설계도입니다. 내가 어떤 페이지를 "머릿말", "본문" 두가지 요소로 만들고 싶다면 HTML코드는 
+```html
+    <head>
+        머릿말
+    </head>
+    <body>
+        본문
+    </body>
+```
+    이런식으로 구성 될 수 있습니다. 따라서 내가 크롤링 하고 싶은 부분이 웹 페이지를 구성하는 html상에서 어디에 위치하고 있는지만 알고 있다면, html 문서의 규칙을 통해 얻어 올 수 있습니다. 그렇다면 방금 불러온 웹페이지의 정보를 불러와보겠습니다. 이번 포스트에서는 웹 브라우저중 크롬을 사용 활용하겠습니다. 크롬을 킨 다음, 위에서 정의한 url을 복사하여 내가 보고자 하는 페이지로 이동한 다음, F12키를 눌러봅니다.
+    
+![chrome_dev_tool](src/dev_tool.png)
+
+    그러면 위 그림과 같이 매우 복잡한 코드를 볼 수 있습니다. 하지만 여기서 모든 html 문서를 뒤져가면서 내가 원하는 부분을 찾아내기는 매우 어려우니, 내가 알아내고자 하는 부분에 마우스를 가져다 놓고 우클릭을 합니다. 그리고 나서 '검사'라는 항목을 클릭하면 바로 내가 찾고자 하는 그 부분의 html이 하이라이트 될 것입니다.
+    
+![inspector](src/inspector.png)
+    
+    여기서 마우스를 html 문서 상에서 여러 키워드들 사이를 움직이다 보면 실제 웹 페이지의 다양한 영역이 하이라이트 되는 것을 볼 수 있습니다. 그 후, 내가 받아보고 싶은 정보들은 뉴스들에 대한 정보이기 때문에 해당 부분을 찾아봅니다.
+    
+![section](src/find_sec.png)
+
+    그러면 이제 우리는 네이버 뉴스검색에서 실제 뉴스들에 대한 정보들을 담고 있는 부분이 바로 `<div class="news mynews section _prs_nws">`에 해당하는 부분이라는 것을 알았습니다. 그렇다면 해당 되는 부분을 우리는 어떻게 찾을 수 있을까요? 바로 맨 처음에 이야기 했던 그 BeautyfulSoup 패키지를 사용하는 것 입니다. 물론 requests에서 받아온 text정보를 토대로 이를 정보를 추출할 수도 있지만, 해당 작업을 누군가가 이미 해 놓은 패키지가 바로 BeautyfulSoup입니다.
+    
+
+
+```python
+# python 패키지 중 하나인 BeautyfulSoup를 활용한 HTML 데이터 추출!
+# bs4 모듈을 불러온다.
+import bs4
+
+# res.text에 있는 단순 문자열인 html 정보를 넣어 html의 의미를 해석 할 수 있는 bs4 객체를 생성한다.
+search_bs4 = bs4.BeautifulSoup(res.text)
+
+# search_bs4에서 내가 원하는 뉴스들을 갖고 있는 부분을 찾아낸다.
+news_bs4 = search_bs4.find('div',class_ = 'news mynews section _prs_nws')
+
+print(news_bs4.text)
+```
+
+      뉴스 1-10 / 3,883,255건  언론사 선정해당 언론사가 채널 주요기사로 직접 선정한 기사입니다. 뉴스검색 가이드   관련도순 최신순 오래된순   검색결과 자동고침 진행 중 검색결과 자동고침 정지 시작 최신순     독일 코로나19 일일 확진자 4개월만에 최다 연합뉴스  3분 전  네이버뉴스   보내기   김정은 특파원 = 독일에서 신종 코로나바이러스 감염증(코로나19) 일일 신규 확진자가 4개월여만에 가장 많이 발생한 것으로 나타났다고 블룸버그 통신이 22일(현지시간) 전했다. 한국의 질병관리본부 격인 독일...      남해군, 민방위 사이버 교육 대체 시행 일요서울  4분 전   보내기   경남 남해군은 코로나19 확산 예방을 위해 올해 민방위 교육을 비대면 사이버 교육으로 대체해 시행한다고... 하지만 올해는 코로나19 확산으로 집합교육 및 소집훈련이 일체 중단된 상태다. 민방위 사이버 교육은 9월...      세종시, 코로나19 추가 확진 1명(57)발생... 55번 확진자의 접촉자 일요서울  4분 전   보내기   세종지역 확진자 현황 세종시에서 코로나19 확진자가 1명 추가로 발생했다. 시에 따르면 22일 1명(57)이 이날 코로나19 확진판정을 받았다고 밝혔다. 세종시의 코로나19 누적 확진자는 57명으로 늘었다. 57번 확진자...      해남군, 22일부터 사회적 거리두기 2단계 격상 일요서울  4분 전   보내기   해남에는 코로나가 발생하지 않았으나, 인근 시군까지 코로나가 확산된 상황에서 강력한 예방 조치가 필요하다는 판단아래 관내 경로당 586개소를 비롯해 문화예술회관과 우슬국민체육센터 등 군에서 운영하는...      세종시, 사회적 거리두기 2단계 시행... 23일 0시부터 일요서울  4분 전   보내기   22일 이춘희 세종시장이 유관기관과 합동으로 코로나19의 전국적인 확산에 대응해 오는 23일 0시 부터 사회적 거리두기 2단계 조치 관련 브리핑을 하고 있다. 세종시가 코로나19의 전국적인 확산에 대응해 오는 23일 0시...      코로나19로 불 꺼진 무대…확진자 직간접 접촉자 발생으로 연쇄 공연중단 브릿지경제  4분 전   보내기   코로나19로 불 꺼진 무대…확진자 직간접 접촉자 발생으로 연쇄 공연중단 코로나바이러스감염증-19(COVID-19, 이하 코로나19)의 무서운 재확산세가 무대 위를 휩쓸었다. 22일 뮤지컬 ‘킹키부츠’는 출연배우가 코로나19...      세종시, 소규모 종교행사 전면 금지 행정명령 일요서울  4분 전   보내기   시는 서울을 중심으로 코로나19 신규 확진자가 1주일 째 세 자리 수를 기록하고, 지난 1주간 관내 6명의 신규... 있다"며 "지금 가장 시급한 것은 8.15 광화문 집회 참가자 모두가 코로나19 진단검사를 받는 것"이라고 강조했다.      【시사】코로나19 확진자 최초 발생한 보령시 확산 방지를 위한 선제적 대응에... sbn뉴스  5분 전   보내기   김동일 시장, “코로나19 확산 방지에 최선 다할 것”...긴급 담화문 발표 = 22일 충남 보령시가 지역 내 최초로 코로나19 확진자 발생에 맞춰 확산 방지를 위한 선제적 대응에 나서기로 했다.김동일 보령시장은 이날 시청...      대구시 수성구립 범어도서관·계명대 목요철학원 차(茶) 문화 학술심포지엄 성... 국제뉴스  6분 전   보내기   차 문화의 학술적 가치 정립을 위해 마련된 이번 심포지엄는 코로나 국면에 대비하여 철저한 방역과 사회적 거리두기 지침을 준수하여 현장에는 최소 인원을 수용하고 유튜브 실시간 방송 중계를 하는 방식으로...      전세계 코로나 누적 사망자 80만 돌파…미국·브라질·멕시코 순 조선일보  8분 전  네이버뉴스   보내기   전세계에서 코로나 바이러스 감염증으로 인해 숨진 사람이 80만명을 넘어섰다. 국제통계사이트 월드오미터에 따르면, 22일 오후 1시40분(영국 그리니치 표준시) 기준 전세계 코로나 바이러스로 인한 누적...     12345678910다음페이지    뉴스 기사와 댓글로 인한 문제 발생시 24시간 센터로 접수해주세요. 24시간센터 
+    
+
+    `news_bs4.text`에 들어있는 정보들은 바로 현재 화면에서 볼 수 있는 모든 뉴스들에 대한 정보를 담고 있습니다. 가령 현재 페이지에 있는 뉴스들이 몇번째 뉴스인지와 총 몇개의 뉴스가 있는지. 그리고 네이버의 뉴스 검색 가이드 문구, 각 뉴스들의 제목과 요약, 마지막으로 페이지 넘기기 등등등 여기서 위에서 나온 스크린샷과 news_bs4.text의 결과가 다른 것은 스크린샷 찍은 시점과 현재 페이지가 요청받은 시점이 다르기 때문일 수 있습니다.
+    그러면 우리는 현재 웹 상에 한 페이지에 존재하는 뉴스들에 대한 정보를 크롤링 해 보았습니다. 아직까지는 크롤링을 통해 받아온 정보들을 효율적으로 저장하기에는 매우 불편한 형태로 데이터가 주어져 있습니다. 다음 포스트 때에는 내가 원하는 대로 잘라서 엑셀 상에 저장할 수 있는 방법에 대해서 알아보겠습니다!
